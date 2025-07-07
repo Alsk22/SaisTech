@@ -7,8 +7,7 @@ import matplotlib.pyplot as plt
 df = pd.read_csv("sales_data.csv")
 
 # Set your API key securely
-openai_api_key = st.secrets["OPENAI_API_KEY"]
-client = OpenAI(api_key=openai_api_key)
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 # Page title
 st.title("💬 Chat with Your Sales Data (Gen AI + Streamlit)")
@@ -28,13 +27,13 @@ Data:
 User question: {user_question}
         """
 
-        response = openai.ChatCompletion.create(
-    model="gpt-4o",
-    messages=[
-        {"role": "system", "content": "You return clean pandas code only."},
-        {"role": "user", "content": user_prompt}
-    ]
-)    
+        response = client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "You return clean pandas code only."},
+                {"role": "user", "content": prompt}
+            ]
+        )
 
         generated_code = response.choices[0].message.content.strip()
 
@@ -42,13 +41,11 @@ User question: {user_question}
         st.code(generated_code, language='python')
 
         try:
-            # Safe execution
             result = eval(generated_code, {"df": df})
 
             st.markdown("**📊 Result:**")
             st.dataframe(result)
 
-            # Optional chart
             if isinstance(result, pd.Series) or isinstance(result, pd.DataFrame):
                 try:
                     st.bar_chart(result)
