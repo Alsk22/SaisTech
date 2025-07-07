@@ -28,13 +28,13 @@ Data:
 User question: {user_question}
         """
 
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": "You return clean one-line pandas expressions."},
-                {"role": "user", "content": prompt}
-            ]
-        )
+        response = openai.ChatCompletion.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "system", "content": "You return clean pandas code only."},
+        {"role": "user", "content": user_prompt}
+    ]
+)    
 
         generated_code = response.choices[0].message.content.strip()
 
