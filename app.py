@@ -1,17 +1,13 @@
+import openai
 import streamlit as st
 import pandas as pd
-from openai import OpenAI
 import matplotlib.pyplot as plt
 
 # Load your sales data
 df = pd.read_csv("sales_data.csv")
 
-# Set your API key securely
-openai_api_key = st.secrets["OPENAI_API_KEY"]
-client = OpenAI(api_key=openai_api_key)
-
-# Debug output
-st.write("✅ API Key Loaded:", st.secrets["OPENAI_API_KEY"][:10])
+# ✅ Set your API key directly (old, reliable way)
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # Page title
 st.title("💬 Chat with Your Sales Data (Gen AI + Streamlit)")
@@ -31,7 +27,7 @@ Data:
 User question: {user_question}
         """
 
-        response = client.chat.completions.create(
+        response = openai.ChatCompletion.create(
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": "You return clean pandas code only."},
