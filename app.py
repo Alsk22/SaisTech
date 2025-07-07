@@ -1,15 +1,15 @@
-import openai
 import streamlit as st
 import pandas as pd
+from openai import OpenAI
 import matplotlib.pyplot as plt
 
 # Load your sales data
 df = pd.read_csv("sales_data.csv")
 
-# ✅ Set your API key directly (old, reliable way)
-openai.api_key = st.secrets["OPENAI_API_KEY"]
+# ✅ Set up OpenAI client using new v1.x SDK
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
-# Page title
+# Title
 st.title("💬 Chat with Your Sales Data (Gen AI + Streamlit)")
 
 # User input
@@ -27,7 +27,8 @@ Data:
 User question: {user_question}
         """
 
-        response = openai.ChatCompletion.create(
+        # ✅ Use new-style OpenAI SDK call
+        response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": "You return clean pandas code only."},
@@ -35,6 +36,7 @@ User question: {user_question}
             ]
         )
 
+        # Get result
         generated_code = response.choices[0].message.content.strip()
 
         st.markdown("**🔧 GPT-Generated Code:**")
@@ -42,15 +44,14 @@ User question: {user_question}
 
         try:
             result = eval(generated_code, {"df": df})
-
             st.markdown("**📊 Result:**")
             st.dataframe(result)
 
+            # Optional chart
             if isinstance(result, pd.Series) or isinstance(result, pd.DataFrame):
                 try:
                     st.bar_chart(result)
                 except:
                     pass
-
         except Exception as e:
             st.error(f"⚠️ Error executing code: {e}")
