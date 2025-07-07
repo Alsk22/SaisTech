@@ -7,7 +7,11 @@ import matplotlib.pyplot as plt
 df = pd.read_csv("sales_data.csv")
 
 # Set your API key securely
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+openai_api_key = st.secrets["OPENAI_API_KEY"]
+client = OpenAI(api_key=openai_api_key)
+
+# Debug output
+st.write("✅ API Key Loaded:", st.secrets["OPENAI_API_KEY"][:10])
 
 # Page title
 st.title("💬 Chat with Your Sales Data (Gen AI + Streamlit)")
